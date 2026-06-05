@@ -179,37 +179,68 @@ def plot_geometry():
                            bgcolor='white',
                            bordercolor=col, borderwidth=2, borderpad=5)
 
-    # ── Imágenes eléctricas (bajo tierra, mayor profundidad para separación) ─────
+    # ── Imágenes eléctricas (simetría especular respecto al suelo) ───────────────
+    # Las imágenes se ubican a la misma distancia h bajo tierra (escala visual 0.72)
     scale_img = 0.72
+    img_positions = []   # guardar para la leyenda de simetría
+
     for x, h, col, lbl, vlbl, info in cond_data:
         y_img = -h * scale_img
+        img_positions.append((x, h, y_img, lbl))
+
+        # Línea punteada vertical suelo → imagen
+        fig.add_shape(type='line', x0=x, y0=-0.10, x1=x, y1=y_img + 0.20,
+                      line=dict(color=COLOR_IMAGEN, width=1.4, dash='dot'))
+
+        # Flecha doble mostrando la profundidad (simetría: prof = h)
+        x_arr = x - 0.55   # a la izquierda del poste punteado
+        fig.add_annotation(x=x_arr, y=y_img, ax=x_arr, ay=-0.05,
+                           axref='x', ayref='y',
+                           arrowhead=2, arrowsize=0.9, arrowwidth=1.6,
+                           arrowcolor=COLOR_IMAGEN, arrowside='start+end')
+        fig.add_annotation(x=x_arr - 0.22, y=y_img / 2,
+                           text=f'<i>h={h}</i>',
+                           showarrow=False,
+                           font=dict(color=COLOR_IMAGEN, size=10))
+
+        # Círculo imagen (hueco, gris)
         fig.add_trace(go.Scatter(
             x=[x], y=[y_img],
             mode='markers',
-            marker=dict(color='white', size=24,
-                        line=dict(color=COLOR_IMAGEN, width=2.5),
+            marker=dict(color='white', size=26,
+                        line=dict(color=COLOR_IMAGEN, width=2.8),
                         symbol='circle'),
             showlegend=False,
             hovertemplate=(
-                f'Imagen eléctrica de {lbl}<br>'
+                f'<b>Imagen eléctrica de {lbl}</b><br>'
                 f'Profundidad = {h} u.a.<br>'
                 f'Carga efectiva: −{lbl}<extra></extra>'
             )
         ))
-        fig.add_shape(type='line', x0=x, y0=-0.08, x1=x, y1=y_img + 0.22,
-                      line=dict(color=COLOR_IMAGEN, width=1.3, dash='dot'))
-        fig.add_annotation(x=x, y=y_img - 0.35,
-                           text=f'<i>−{lbl}′</i><br><small>prof = {h} u.a.</small>',
-                           showarrow=False,
-                           font=dict(color=COLOR_IMAGEN, size=11),
-                           bgcolor='rgba(255,255,255,0.75)',
-                           borderpad=2)
 
-    # Etiqueta zona imágenes
-    fig.add_annotation(x=XL + 0.3, y=-2.8,
-                       text='<i>Imágenes eléctricas  (método de Maxwell)</i>',
+        # Símbolo de carga negativa dentro del círculo
+        fig.add_annotation(x=x, y=y_img, text='<b>−</b>',
+                           showarrow=False,
+                           font=dict(color=COLOR_IMAGEN, size=14))
+
+        # Etiqueta nombre (a la derecha, sin HTML no soportado)
+        fig.add_annotation(x=x + 0.38, y=y_img + 0.06,
+                           text=f'<i>−{lbl}′</i>',
+                           showarrow=False,
+                           font=dict(color=COLOR_IMAGEN, size=12),
+                           xanchor='left')
+        # Profundidad (debajo, fuente pequeña — sin <small>)
+        fig.add_annotation(x=x + 0.38, y=y_img - 0.32,
+                           text=f'prof = {h} u.a.',
+                           showarrow=False,
+                           font=dict(color=COLOR_IMAGEN, size=9),
+                           xanchor='left')
+
+    # Etiqueta zona imágenes (abajo del todo)
+    fig.add_annotation(x=XL + 0.3, y=-3.20,
+                       text='<i>Imágenes eléctricas — simetría especular respecto al suelo (prof = h)</i>',
                        showarrow=False,
-                       font=dict(color=COLOR_IMAGEN, size=11),
+                       font=dict(color=COLOR_IMAGEN, size=10),
                        xanchor='left')
 
     # ── Separador zona real / imágenes ─────────────────────────────────────────
@@ -248,7 +279,7 @@ def plot_geometry():
             tickfont=dict(size=13),
         ),
         yaxis=dict(
-            range=[-3.6, 6.0],
+            range=[-3.9, 6.0],
             title_text='Altura (u.a.)',
             showgrid=True, gridcolor='#eee', zeroline=False,
             tickvals=[0, 1, 2, 3, 4, 5],
