@@ -74,7 +74,7 @@ def plot_geometry():
     fig.add_shape(type='rect', x0=XL, y0=0, x1=XR, y1=6.0,
                   fillcolor='#EEF4FF', line_width=0, layer='below')
     # Tierra (marrón muy suave)
-    fig.add_shape(type='rect', x0=XL, y0=-2.2, x1=XR, y1=0,
+    fig.add_shape(type='rect', x0=XL, y0=-5.2, x1=XR, y1=0,
                   fillcolor='#F5EFE6', line_width=0, layer='below')
 
     # ── Línea del suelo ────────────────────────────────────────────────────────
@@ -180,8 +180,8 @@ def plot_geometry():
                            bordercolor=col, borderwidth=2, borderpad=5)
 
     # ── Imágenes eléctricas (simetría especular respecto al suelo) ───────────────
-    # Las imágenes se ubican a la misma distancia h bajo tierra (escala visual 0.72)
-    scale_img = 0.72
+    # scale_img=1.0 → imagen a exactamente -h, misma distancia que el conductor real
+    scale_img = 1.0
     img_positions = []   # guardar para la leyenda de simetría
 
     for x, h, col, lbl, vlbl, info in cond_data:
@@ -237,7 +237,7 @@ def plot_geometry():
                            xanchor='left')
 
     # Etiqueta zona imágenes (abajo del todo)
-    fig.add_annotation(x=XL + 0.3, y=-3.20,
+    fig.add_annotation(x=XL + 0.3, y=-4.80,
                        text='<i>Imágenes eléctricas — simetría especular respecto al suelo (prof = h)</i>',
                        showarrow=False,
                        font=dict(color=COLOR_IMAGEN, size=10),
@@ -279,12 +279,12 @@ def plot_geometry():
             tickfont=dict(size=13),
         ),
         yaxis=dict(
-            range=[-3.9, 6.0],
+            range=[-5.2, 6.0],
             title_text='Altura (u.a.)',
             showgrid=True, gridcolor='#eee', zeroline=False,
-            tickvals=[0, 1, 2, 3, 4, 5],
+            tickvals=[-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
         ),
-        height=660,
+        height=720,
         showlegend=True,
         legend=dict(x=0.01, y=0.99, bgcolor='rgba(255,255,255,0.9)',
                     bordercolor='#ddd', borderwidth=1),
